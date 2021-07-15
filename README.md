@@ -1,6 +1,10 @@
-# Solidity Template
+# StakingRewards
 
-My favourite setup for writing Solidity smart contracts.
+Based on [Synthetix](https://github.com/Synthetixio) contract [StakingRewards.sol](https://github.com/Synthetixio/synthetix/blob/develop/contracts/StakingRewards.sol)
+
+# Solidity Project Setup
+
+The [Solidity template](https://github.com/paulrberg/solidity-template) from [@paulrberg](https://github.com/paulrberg) was used to initialize this project.
 
 - [Hardhat](https://github.com/nomiclabs/hardhat): compile and run the smart contracts on a local development network
 - [TypeChain](https://github.com/ethereum-ts/TypeChain): generate TypeScript types for smart contracts
@@ -9,9 +13,6 @@ My favourite setup for writing Solidity smart contracts.
 - [Solhint](https://github.com/protofire/solhint): linter
 - [Solcover](https://github.com/sc-forks/solidity-coverage): code coverage
 - [Prettier Plugin Solidity](https://github.com/prettier-solidity/prettier-plugin-solidity): code formatter
-
-This is a GitHub template, which means you can reuse it as many times as you want. You can do that by clicking the "Use this
-template" button at the top of the page.
 
 ## Usage
 
