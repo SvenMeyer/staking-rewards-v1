@@ -5,6 +5,7 @@ import "solidity-coverage";
 
 import "./tasks/accounts";
 import "./tasks/clean";
+import "./tasks/deployers";
 
 import { resolve } from "path";
 
@@ -25,22 +26,21 @@ const chainIds = {
 };
 
 // Ensure that we have all the environment variables we need.
-const mnemonic = process.env.MNEMONIC;
+const mnemonic: string | undefined = process.env.MNEMONIC;
 if (!mnemonic) {
   throw new Error("Please set your MNEMONIC in a .env file");
 }
 
-const infuraApiKey = process.env.INFURA_API_KEY;
+const infuraApiKey: string | undefined = process.env.INFURA_API_KEY;
 if (!infuraApiKey) {
   throw new Error("Please set your INFURA_API_KEY in a .env file");
 }
 
-function createTestnetConfig(network: keyof typeof chainIds): NetworkUserConfig {
+function getChainConfig(network: keyof typeof chainIds): NetworkUserConfig {
   const url: string = "https://" + network + ".infura.io/v3/" + infuraApiKey;
   return {
     accounts: {
       count: 10,
-      initialIndex: 0,
       mnemonic,
       path: "m/44'/60'/0'/0",
     },
@@ -63,11 +63,13 @@ const config: HardhatUserConfig = {
         mnemonic,
       },
       chainId: chainIds.hardhat,
+      // See https://github.com/sc-forks/solidity-coverage/issues/652
+      hardfork: process.env.CODE_COVERAGE ? "berlin" : "london",
     },
-    goerli: createTestnetConfig("goerli"),
-    kovan: createTestnetConfig("kovan"),
-    rinkeby: createTestnetConfig("rinkeby"),
-    ropsten: createTestnetConfig("ropsten"),
+    goerli: getChainConfig("goerli"),
+    kovan: getChainConfig("kovan"),
+    rinkeby: getChainConfig("rinkeby"),
+    ropsten: getChainConfig("ropsten"),
   },
   paths: {
     artifacts: "./artifacts",
@@ -75,50 +77,22 @@ const config: HardhatUserConfig = {
     sources: "./contracts",
     tests: "./test",
   },
-
-  // https://hardhat.org/hardhat-network/#solidity-optimizer-support
   solidity: {
-    compilers: [
-      {
-        version: "0.5.16",
+    version: "0.8.6",
+    settings: {
+      metadata: {
+        // Not including the metadata hash
+        // https://github.com/paulrberg/solidity-template/issues/31
+        bytecodeHash: "none",
       },
-      {
-        version: "0.6.12",
-        settings: {
-          optimizer: {
-            enabled: true,
-            runs: 200,
-          },
-        },
+      // Disable the optimizer when debugging
+      // https://hardhat.org/hardhat-network/#solidity-optimizer-support
+      optimizer: {
+        enabled: true,
+        runs: 800,
       },
-      {
-        version: "0.7.6",
-        settings: {
-          optimizer: {
-            enabled: true,
-            runs: 200,
-          },
-        },
-      },
-      {
-        version: "0.8.6",
-        settings: {
-          metadata: {
-            // Not including the metadata hash
-            // https://github.com/paulrberg/solidity-template/issues/31
-            bytecodeHash: "none",
-          },
-          // You should disable the optimizer when debugging
-          // https://hardhat.org/hardhat-network/#solidity-optimizer-support
-          optimizer: {
-            enabled: true,
-            runs: 800,
-          },
-        },
-      },
-    ],
+    },
   },
-
   typechain: {
     outDir: "typechain",
     target: "ethers-v5",
